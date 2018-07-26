@@ -7,3 +7,7 @@
 - 打开genbindings.py文件
 - 将变量target = 'spidermonkey' 修改为target = 'spidermonkey-ts'
 - python genbindings.py
+
+### 示例
+api文件夹内是使用工具导出的jsb .d.ts文件
+creator.d.ts是所有jsb .d.ts文件合并后的文件
