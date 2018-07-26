@@ -1,0 +1,51 @@
+#set $TapSpace = "    "
+#if $generator.target_ns
+    #set $TapSpace = $TapSpace + "    "
+#end if
+${TapSpace}/**
+${TapSpace} * @method ${func_name}
+#if $is_constructor
+${TapSpace} * @constructor
+#end if
+#if $min_args > 0
+    #set $count = 0
+    #for $arg in $arguments
+    #set $argValue = $arg.argumentName
+${TapSpace} * @param {$generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".")} $argValue
+    #set $count = $count + 1
+    #end for
+#end if
+#if str($ret_type) != "void"
+${TapSpace} * @return {$generator.ts_typename_from_natve($ret_type.namespaced_name).replace("::", ".")}
+#end if
+${TapSpace} */
+#set $argnameListStr = ""
+#if $min_args > 0
+    #set $length = len($arguments)
+    #set $index = 0
+    #for $arg in $arguments
+        #set $argname = $arg.argumentName
+        #if $index < $length - 1 
+            #set $tempArgName = $argname + ": " + $generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".") + ", "
+            #set $argnameListStr = $argnameListStr + $tempArgName
+        #else 
+            #set $tempArgName = $argname + ": " + $generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".")
+            #set $argnameListStr = $argnameListStr + $tempArgName
+        #end if
+        #set $index = $index + 1
+    #end for
+#end if
+#if str($ret_type) != "void"
+    #set $returnTypeStr = $generator.ts_typename_from_natve($ret_type.namespaced_name).replace("::", ".")
+#else
+    #set $returnTypeStr = "void"
+#end if
+#if $is_constructor
+${TapSpace}constructor(${argnameListStr});
+#else if $static
+${TapSpace}static ${func_name}(${argnameListStr}): ${returnTypeStr};
+#else 
+${TapSpace}${func_name}(${argnameListStr}): ${returnTypeStr};
+#end if
+
+

@@ -1,0 +1,20 @@
+#set generator = $current_class.generator
+
+/**
+ * @class ${current_class.class_name}
+ */
+#if $generator.target_ns
+declare namespace ${generator.target_ns} {
+#if len($current_class.parents) > 0
+    class ${current_class.target_class_name}  extends ${current_class.parents[0].class_name} {
+#else
+    class ${current_class.target_class_name} {
+#end if
+#else
+#if len($current_class.parents) > 0
+class ${current_class.target_class_name}  extends ${current_class.parents[0].class_name} {
+#else
+class ${current_class.target_class_name} {
+#end if
+#end if
+

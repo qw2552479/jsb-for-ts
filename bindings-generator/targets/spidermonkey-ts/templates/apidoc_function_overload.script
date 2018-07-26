@@ -1,0 +1,114 @@
+#set $TapSpace = "    "
+#if $generator.target_ns
+    #set $TapSpace = $TapSpace + "    "
+#end if
+${TapSpace}/**
+${TapSpace} * @method ${func_name}
+#if $is_constructor
+${TapSpace} * @constructor
+#end if
+#set $max_count = 0
+#set $func_count = len($implementations)
+#set $func_index = 0
+#for func in $implementations
+    #if len($func.arguments) >= $max_count
+        #set $max_count = len($func.arguments)
+    #end if
+    #set $func_index = $func_index + 1
+#end for
+#if $max_count > 0
+    #set $arg_idx   = 0
+    #while $arg_idx < $max_count
+        #set $tip =  "@param {"
+        #set $sub_tip = ""
+        #set $is_sub_tip_set = False
+        #set $func_index = 0
+        #for func in $implementations
+            #set $loop_index = 0
+            #set $is_find    = False
+            #for $arg in $func.arguments
+                #if $loop_index < len($func.arguments)
+                    #if $loop_index == $arg_idx
+                        #set $tip = $tip + $generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".")
+                        #set $is_find = True
+                        #if $is_sub_tip_set == False
+                            #set $is_sub_tip_set = True
+                            #set $sub_tip = $arg.argumentName
+                        #end if
+                    #end if
+                    #set $loop_index = $loop_index + 1
+                #end if 
+            #end for
+            #if $func_index < $func_count - 1
+                #if $is_find == True
+                    #set $tip = $tip + "|"
+                #end if
+            #end if
+            #set $func_index = $func_index + 1
+        #end for
+        #if $tip.endswith('|')
+            #set $tip = $tip[:-1]
+        #end if
+        #set $tip = $tip + "} " + $sub_tip
+${TapSpace}* $tip
+        #set $arg_idx   = $arg_idx + 1
+    #end while
+#end if
+#set $ret_tip2 = ""
+#set $ret_tip = "{"
+#set $func_index = 0
+#set $have_ret = False
+#for func in $implementations
+    #if str($func.ret_type) != "void"
+        #set $ret_tip = $ret_tip + $generator.ts_typename_from_natve($func.ret_type.namespaced_name).replace("::", ".") + "|"
+        #set $ret_tip2 = $ret_tip2 + $generator.ts_typename_from_natve($func.ret_type.namespaced_name).replace("::", ".") + "|"
+        #set $have_ret = True
+    #end if
+    #set $func_index = $func_index + 1
+#end for
+#if $ret_tip.endswith('|')
+    #set $ret_tip = $ret_tip[:-1] + "}"
+    #set $ret_tip2 = $ret_tip2[:-1]
+#end if
+#if $have_ret
+${TapSpace}* @return $ret_tip
+#end if
+*/
+#set $max_count = 0
+#set $func_count = len($implementations)
+#set $func_index = 0
+#set $max_index  = 0
+#set $selected_func = 0
+#for func in $implementations
+    #if len($func.arguments) >= $max_count
+        #set $max_count = len($func.arguments)
+        #set $max_index = $func_index
+        #set $selected_func = func 
+    #end if
+    #set $func_index = $func_index + 1
+#end for
+#set $argnameListStr = ""
+#set $arg_idx = 0
+#for $arg in $selected_func.arguments
+    #set $argname = $arg.argumentName
+    #if $arg_idx < $max_count - 1 
+#set $argnameListStr = $argnameListStr + $argname + ": " + $generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".") + ", "
+    #else 
+#set $argnameListStr = $argnameListStr + $argname + ": " + $generator.ts_typename_from_natve($arg.namespaced_name).replace("::", ".")
+    #end if
+    #set $arg_idx = $arg_idx + 1
+#end for
+#set $returnTypeStr = ""
+#if $have_ret
+    #set $returnTypeStr = $ret_tip2
+#else 
+    #set $returnTypeStr = "void"
+#end if
+#if $is_constructor
+${TapSpace}constructor(${argnameListStr});
+#else
+${TapSpace}${func_name}(${argnameListStr}): ${returnTypeStr};
+#end if
+
+
+

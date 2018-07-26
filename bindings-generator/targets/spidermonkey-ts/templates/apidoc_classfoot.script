@@ -1,0 +1,7 @@
+#set generator = $current_class.generator
+#if $generator.target_ns
+    }
+}
+#else
+}
+#end if
